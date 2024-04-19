@@ -20,43 +20,42 @@ def tree_by_levels(node):
 
 class Solution:
     def deleteNode(self, root, key: int):
-        copy_root = root
-        def go_nodes(node, parent):
+        def go_nodes(node, parent, key):
             if node:
                 if node.val == key:
                     if not node.left and not node.right:
-                        if parent.left.val == node.val:
+                        if parent.left == node:
                             parent.left = None
                         else:
                             parent.right = None
                     elif not node.left and node.right:
-                        if parent.left.val == node.val:
+                        if parent.left == node:
                             parent.left = node.right
                         else:
                             parent.right = node.right
                     elif not node.right and node.left:
-                        if parent.left.val == node.val:
+                        if parent.left == node:
                             parent.left = node.left
                         else:
                             parent.right = node.left
                     elif node.right and node.left:
-                        parent_copy = node
-                        biggest = node.right
-                        while biggest.left:
-                            parent_copy = biggest
-                            biggest = biggest.left
-                        node.val = biggest.val
-                        go_nodes(biggest, parent_copy)
-                else:
-                    if node.val > key:
-                        go_nodes(node.left, node)
-                    elif node.val < key:
-                        go_nodes(node.right, node)
-        go_nodes(copy_root, copy_root)
-        return tree_by_levels(copy_root)
+                        smallest = node.right
+                        while smallest.left:
+                            smallest = smallest.left
+                        node.val = smallest.val
+                        go_nodes(node.right, node, smallest.val)
+                elif node.val > key:
+                    go_nodes(node.left, node, key)
+                elif node.val < key:
+                    go_nodes(node.right, node, key)
+        dummy = TreeNode(None)
+        dummy.left = root
+        go_nodes(root, dummy, key)
+        return dummy.left
 
     
 root = TreeNode(5, TreeNode(3, left=TreeNode(2), right=TreeNode(4)), TreeNode(6, right=TreeNode(7)))
 s = Solution()
-print(s.deleteNode(root, 3))
+root2 = TreeNode(5, left=TreeNode(3, left=TreeNode(2), right=TreeNode(4)), right=TreeNode(6, right=TreeNode(7)))
+print(s.deleteNode(root2, 7))
         
